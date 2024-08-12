@@ -23,7 +23,7 @@
     "appId": "xh-win-tools",
     "asar": false,
     "directories": {
-      "output": "release/${version}"
+      "output": "release/"
     },
     "files": [
       "dist"
