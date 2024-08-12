@@ -1,0 +1,14 @@
+{
+  "en": {
+    "hello": "hello world!"
+  },
+  "ja": {
+    "hello": "こんにちは、世界!"
+  },
+  "zhCN": {
+    "myConfig":{
+      "name":"中二少年"
+    },
+    "hello": "hello 中二少年"
+  }
+}
