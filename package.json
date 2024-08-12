@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "main": "./electron/main/main.js",
   "description": "electron+vite+vue3+electon-builder demo",
-  "author": "逍遥",
+  "author": "星海",
   "license": "MIT",
   "scripts": {
     "dev:vue": "vite",
