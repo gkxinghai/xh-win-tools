@@ -18,7 +18,7 @@
     "build": "npm run build:vue && node ./public/build.js build &&  npm run build:e"
   },
   "build": {
-    "productName": "xh-win-tools",
+    "productName": "百宝箱",
     "appId": "xh-win-tools",
     "asar": false,
     "directories": {
