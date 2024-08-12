@@ -14,11 +14,11 @@ const exec = util.promisify(require('node:child_process').exec);
         // pkg.main='./electron/main/main.js'
         pkg.main='./electron/main/main.js'
         pkg.build.nsis.include= "./public/electron/installer.nsh"
-        pkg.build.win.icon="./public/electron/favicon.ico"
+        pkg.build.win.icon="./public/electron/logo.ico"
     }else{
         pkg.main='./dist/assets/progress.js'
         pkg.build.nsis.include= "./dist/electron/installer.nsh"
-        pkg.build.win.icon="./dist/electron/favicon.ico"
+        pkg.build.win.icon="./dist/electron/logo.ico"
 
     }
     const pkgStr=JSON.stringify(pkg, null, 2)
