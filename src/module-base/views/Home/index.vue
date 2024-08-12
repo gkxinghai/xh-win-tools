@@ -2,26 +2,21 @@
   <div class="box-btns">
     <button @click="handleBtn1">合并多个Excel</button>
     <button @click="handleBtn2">合并单个Excel</button>
+    <button @click="handleBtn3">批量新建文件夹</button>
+    <button @click="handleBtn4">提取文件夹名称</button>
   </div>
 </template>
 
 <script setup lang="ts">
 import * as XLSX from "xlsx/xlsx.mjs";
 
-// 注意：s2ab是一个辅助函数，用于将字符串转换为ArrayBuffer
-function s2ab(s) {
-  var buf = new ArrayBuffer(s.length);
-  var view = new Uint8Array(buf);
-  for (var i = 0; i < s.length; i++) view[i] = s.charCodeAt(i) & 0xff;
-  return buf;
-}
-
+// 解析sheet数据
 const updateWsData = (ws_data, ws_header, sheet, file) => {
   const arrayBuffer = file.buffer;
   const workbook = XLSX.read(arrayBuffer, { type: "array" });
   const worksheet = workbook.Sheets[sheet];
   const range = XLSX.utils.decode_range(worksheet["!ref"]);
-  let header = ws_header
+  let header = ws_header;
 
   for (let r = 0; r <= range.e.r; r++) {
     const row = [];
@@ -38,12 +33,13 @@ const updateWsData = (ws_data, ws_header, sheet, file) => {
       ws_data.push(row);
     }
   }
-  return header
+  return header;
 };
 
 // 合并多个Excel
 const handleBtn1 = () => {
-  myApi.handleReadDirectory((files) => {
+  myApi.handleReadDirectory((e) => {
+    const files = e.files
     if (files.length > 0) {
       const arrayBuffer = files[0].buffer;
       const workbook_0 = XLSX.read(arrayBuffer, { type: "array" });
@@ -54,7 +50,7 @@ const handleBtn1 = () => {
         const ws_data = [];
         let ws_header = [];
         files.forEach((file) => {
-          if(ws_header.length === 0) {
+          if (ws_header.length === 0) {
             ws_header = updateWsData(ws_data, ws_header, sheet, file);
           } else {
             updateWsData(ws_data, ws_header, sheet, file);
@@ -66,15 +62,55 @@ const handleBtn1 = () => {
 
       XLSX.writeFile(workbook_new, "output.xlsx");
     }
-
   });
 };
 
 // 合并单个Excel
-
-
 const handleBtn2 = () => {
-  
+  myApi.handleReadFile((e) => {
+    const file = e.file;
+    const arrayBuffer = file.buffer;
+    const workbook = XLSX.read(arrayBuffer, { type: "array" });
+    const excelSheetNames = workbook.SheetNames;
+    const workbook_new = XLSX.utils.book_new();
+    const ws_data = [];
+    let ws_header = [];
+
+    excelSheetNames.forEach(() => {
+      ws_header = updateWsData(ws_data, ws_header, excelSheetNames[0], file);
+    });
+    const ws = XLSX.utils.aoa_to_sheet(ws_data);
+    XLSX.utils.book_append_sheet(workbook_new, ws, excelSheetNames[0]);
+    XLSX.writeFile(workbook_new, "output.xlsx");
+  });
+};
+
+// 根据Excel批量新建文件夹
+const handleBtn3 = () => {
+  myApi.handleReadFile((e) => {
+    const { file, filePath } = e;
+    const arrayBuffer = file.buffer;
+    const workbook = XLSX.read(arrayBuffer, { type: "array" });
+    const ws_data = [];
+    const ws_header = [1];
+    updateWsData(ws_data, ws_header, workbook.SheetNames[0], file);
+
+    const index = filePath.lastIndexOf('\\')
+    const path = filePath.slice(0, index + 1)
+    const arr = ws_data.map(item => item.join("").replaceAll("/", "")).filter(item => item).map(item => path + item)
+    myApi.createDirectorys(arr)
+  });
+};
+
+// 提取文件夹名称到Excel
+const handleBtn4 = () => {
+  myApi.handleGetDirectoryNames((e) => {
+    const directoryNames = e.directoryNames
+    const workbook_new = XLSX.utils.book_new();
+    const ws = XLSX.utils.aoa_to_sheet(directoryNames.map(item => [item]));
+    XLSX.utils.book_append_sheet(workbook_new, ws, 'Sheet1');
+    XLSX.writeFile(workbook_new, "output.xlsx");
+  });
 }
 </script>
 

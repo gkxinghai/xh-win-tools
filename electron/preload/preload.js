@@ -34,6 +34,33 @@ const handleReadDirectory = (cb) => {
     ipcRenderer.send("read-directory");
 };
 
+const handleReadFile = (cb) => {
+    ipcRenderer.on('on-read-file', (event, arg) => {
+        console.log('on-read-file', arg)
+        if(cb){
+            cb(arg)
+        }
+    })
+
+    ipcRenderer.send("read-file");
+};
+
+const createDirectorys = (arr) => {
+  ipcRenderer.send("create-directorys", arr);
+};
+
+const handleGetDirectoryNames = (cb) => {
+  ipcRenderer.on("on-get-directory-name", (event, arg) => {
+    console.log("on-get-directory-name", arg);
+    if (cb) {
+      cb(arg);
+    }
+  });
+
+  ipcRenderer.send("get-directory-name");
+}
+
+
 /**
  * 暴露给前端windows对象，windows对象的属性可以用windows.myApi调用或者直接简写为myApi调用
  * */
@@ -43,5 +70,8 @@ contextBridge.exposeInMainWorld("myApi", {
   handleGoPage,
   handleGetProgressArgv,
   handlePageRefresh,
-  handleReadDirectory
+  handleReadDirectory,
+  handleReadFile,
+  createDirectorys,
+  handleGetDirectoryNames,
 });
