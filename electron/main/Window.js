@@ -24,8 +24,8 @@ class Window {
         //    配置electron-window-state插件,获取窗口option
         let win
         const options = {
-            width:600,
-            height:800,
+            width: 350,
+            height: 270,
             devTools: true,
             show: false,
             icon: path.resolve(electronAssetsPath, 'log.ico'),

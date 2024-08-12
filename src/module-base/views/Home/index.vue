@@ -38,8 +38,8 @@ const updateWsData = (ws_data, ws_header, sheet, file) => {
 
 // 合并多个Excel
 const handleBtn1 = () => {
-  myApi.handleReadDirectory((e) => {
-    const files = e.files
+  myApi.handleInvoke("read-directory").then(e => {
+    const files = e.files;
     if (files.length > 0) {
       const arrayBuffer = files[0].buffer;
       const workbook_0 = XLSX.read(arrayBuffer, { type: "array" });
@@ -62,12 +62,12 @@ const handleBtn1 = () => {
 
       XLSX.writeFile(workbook_new, "output.xlsx");
     }
-  });
+  })
 };
 
 // 合并单个Excel
 const handleBtn2 = () => {
-  myApi.handleReadFile((e) => {
+  myApi.handleInvoke('read-file').then(e => {
     const file = e.file;
     const arrayBuffer = file.buffer;
     const workbook = XLSX.read(arrayBuffer, { type: "array" });
@@ -87,7 +87,7 @@ const handleBtn2 = () => {
 
 // 根据Excel批量新建文件夹
 const handleBtn3 = () => {
-  myApi.handleReadFile((e) => {
+  myApi.handleInvoke('read-file').then(e => {
     const { file, filePath } = e;
     const arrayBuffer = file.buffer;
     const workbook = XLSX.read(arrayBuffer, { type: "array" });
@@ -95,29 +95,31 @@ const handleBtn3 = () => {
     const ws_header = [1];
     updateWsData(ws_data, ws_header, workbook.SheetNames[0], file);
 
-    const index = filePath.lastIndexOf('\\')
-    const path = filePath.slice(0, index + 1)
-    const arr = ws_data.map(item => item.join("").replaceAll("/", "")).filter(item => item).map(item => path + item)
-    myApi.createDirectorys(arr)
+    const index = filePath.lastIndexOf("\\");
+    const path = filePath.slice(0, index + 1);
+    const arr = ws_data
+      .map((item) => item.join("").replaceAll("/", ""))
+      .filter((item) => item)
+      .map((item) => path + item);
+    myApi.handleInvoke('create-directorys', arr);
   });
 };
 
 // 提取文件夹名称到Excel
 const handleBtn4 = () => {
-  myApi.handleGetDirectoryNames((e) => {
-    const directoryNames = e.directoryNames
+  myApi.handleInvoke("get-directory-names").then(directoryNames => {
     const workbook_new = XLSX.utils.book_new();
-    const ws = XLSX.utils.aoa_to_sheet(directoryNames.map(item => [item]));
-    XLSX.utils.book_append_sheet(workbook_new, ws, 'Sheet1');
+    const ws = XLSX.utils.aoa_to_sheet(directoryNames.map((item) => [item]));
+    XLSX.utils.book_append_sheet(workbook_new, ws, "Sheet1");
     XLSX.writeFile(workbook_new, "output.xlsx");
-  });
-}
+  })
+};
 </script>
 
 <style scoped>
 .box-btns {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: 1fr;
   grid-gap: 10px;
   padding: 10px;
 }
