@@ -25,7 +25,7 @@ class Window {
         let win
         const options = {
             width: 350,
-            height: 270,
+            height: 320,
             devTools: true,
             show: false,
             icon: path.resolve(electronAssetsPath, 'log.ico'),
